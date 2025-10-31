@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Perfumes - ZAID STORE</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <a href="index.html"><img src="logo.png" class="logo" alt="ZAID STORE"></a>
+  <h2 style="display:inline-block;margin-left:14px;color:#ff6600">Perfumes</h2>
+</header>
+
+<main style="max-width:1100px;margin:20px auto;padding:0 16px;">
+  <div id="productContainer" class="product-container"></div>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBNvUn85iXp6ZXMTBLAKYR_OsuXHPDk0TM",
+  authDomain: "zaid-cosmetics-f3792.firebaseapp.com",
+  databaseURL: "https://zaid-cosmetics-f3792-default-rtdb.firebaseio.com",
+  projectId: "zaid-cosmetics-f3792",
+  storageBucket: "zaid-cosmetics-f3792.firebasestorage.app",
+  messagingSenderId: "1027145686032",
+  appId: "1:1027145686032:web:e3797f9b0795ace2987e95",
+  measurementId: "G-TP33NHR7B2"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const category = 'perfumes';
+const container = document.getElementById('productContainer');
+
+function renderCard(p, key){
+  const card = document.createElement('div');
+  card.className = 'product-card';
+  card.innerHTML = `
+    <img src="${p.image}" alt="${p.name}">
+    <div class="name">${p.name}</div>
+    <div class="desc">${p.description || ''}</div>
+    <div class="price">RS ${p.price}</div>
+    <div class="actions">
+      <button class="btn btn-primary" onclick="order('${encodeURIComponent(p.name)}','${category}','${encodeURIComponent(p.price)}')">Order</button>
+    </div>`;
+  return card;
+}
+
+onValue(ref(db, category), snap=>{
+  container.innerHTML = '';
+  const data = snap.val() || {};
+  for(const key in data){
+    const card = renderCard(data[key], key);
+    container.appendChild(card);
+  }
+});
+
+window.order = (name, category, price) => {
+  const phone = '923469489167';
+  const msg = `Hello, I want to order:%0AProduct:%20${decodeURIComponent(name)}%0ACategory:%20${category}%0APrice:%20RS%20${decodeURIComponent(price)}`;
+  window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Admin Panel - ZAID STORE</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* small admin overrides for layout */
+.header { background:#ff6600; color:#fff; padding:16px; text-align:center; font-weight:700; }
+.main { max-width:1200px; margin:20px auto; padding:14px; }
+.admin-section { margin-bottom:22px; background:transparent; }
+.form-grid { display:grid; grid-template-columns: 1fr 1fr; gap:12px; align-items:center; }
+.full { grid-column: 1/-1; }
+.admin-lists { display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-top:12px; }
+.list-box { background:#fff; padding:12px; border-radius:10px; box-shadow:0 6px 20px rgba(16,24,40,0.04); max-height:480px; overflow:auto; }
+.small-input { padding:8px; border-radius:8px; border:1px solid #e6eef6; width:100%; }
+.btn-small { padding:6px 10px; border-radius:8px; border:none; cursor:pointer; }
+.btn-danger { background:#ef4444; color:#fff; }
+.btn-edit { background:#0ea5e9; color:#fff; }
+.card-row { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 0; border-bottom:1px solid #f1f5f9; }
+.card-left { display:flex; align-items:center; gap:10px; }
+.card-left img { width:56px; height:56px; object-fit:cover; border-radius:8px; }
+</style>
+</head>
+<body>
+
+<div class="header">Admin Panel - ZAID STORE</div>
+
+<div class="main">
+  <div class="admin-section">
+    <h3 style="color:#ff6600">Add / Edit Product</h3>
+    <div class="form-grid">
+      <select id="productCategory" class="small-input">
+        <option value="cosmetics">Cosmetics</option>
+        <option value="garments">Garments</option>
+        <option value="perfumes">Perfumes</option>
+      </select>
+      <input id="productName" class="small-input" placeholder="Product Name">
+      <input id="productPrice" class="small-input" placeholder="Price (number)">
+      <input id="productImage" class="small-input" placeholder="Image URL">
+      <input id="productDescription" class="small-input full" placeholder="Short description">
+      <div class="full" style="display:flex; gap:10px;">
+        <button id="addProductBtn" class="btn-small" style="background:#ff6600;color:#fff;border-radius:8px;">Add Product</button>
+        <button id="updateProductBtn" class="btn-small" style="display:none;background:#0ea5e9;color:#fff;border-radius:8px;">Update Product</button>
+        <button id="cancelEditProduct" class="btn-small" style="display:none;background:#f3f4f6;color:#111;border-radius:8px;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-section">
+    <h3 style="color:#ff6600">Add / Edit Staff</h3>
+    <div class="form-grid">
+      <input id="staffName" class="small-input" placeholder="Name">
+      <input id="staffRole" class="small-input" placeholder="Role">
+      <input id="staffContact" class="small-input" placeholder="Contact (e.g. 0346...)">
+      <input id="staffPhoto" class="small-input full" placeholder="Photo URL">
+      <div class="full" style="display:flex; gap:10px;">
+        <button id="addStaffBtn" class="btn-small" style="background:#ff6600;color:#fff;border-radius:8px;">Add Staff</button>
+        <button id="updateStaffBtn" class="btn-small" style="display:none;background:#0ea5e9;color:#fff;border-radius:8px;">Update Staff</button>
+        <button id="cancelEditStaff" class="btn-small" style="display:none;background:#f3f4f6;color:#111;border-radius:8px;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-lists">
+    <div class="list-box">
+      <h4>Products</h4>
+      <div id="productsList"></div>
+    </div>
+
+    <div class="list-box">
+      <h4>Staff</h4>
+      <div id="staffList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- firebase admin script -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+import { getDatabase, ref, push, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBNvUn85iXp6ZXMTBLAKYR_OsuXHPDk0TM",
+  authDomain: "zaid-cosmetics-f3792.firebaseapp.com",
+  databaseURL: "https://zaid-cosmetics-f3792-default-rtdb.firebaseio.com",
+  projectId: "zaid-cosmetics-f3792",
+  storageBucket: "zaid-cosmetics-f3792.firebasestorage.app",
+  messagingSenderId: "1027145686032",
+  appId: "1:1027145686032:web:e3797f9b0795ace2987e95",
+  measurementId: "G-TP33NHR7B2"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+/* DOM refs */
+const productsList = document.getElementById('productsList');
+const staffList = document.getElementById('staffList');
+
+const addProductBtn = document.getElementById('addProductBtn');
+const updateProductBtn = document.getElementById('updateProductBtn');
+const cancelEditProduct = document.getElementById('cancelEditProduct');
+
+const addStaffBtn = document.getElementById('addStaffBtn');
+const updateStaffBtn = document.getElementById('updateStaffBtn');
+const cancelEditStaff = document.getElementById('cancelEditStaff');
+
+/* form fields */
+const productCategory = document.getElementById('productCategory');
+const productName = document.getElementById('productName');
+const productPrice = document.getElementById('productPrice');
+const productImage = document.getElementById('productImage');
+const productDescription = document.getElementById('productDescription');
+
+const staffName = document.getElementById('staffName');
+const staffRole = document.getElementById('staffRole');
+const staffContact = document.getElementById('staffContact');
+const staffPhoto = document.getElementById('staffPhoto');
+
+/* state for editing */
+let editingProduct = null; // {cat, key}
+let editingStaffKey = null;
+
+/* Load products from three categories, render list with edit/delete */
+function loadProducts() {
+  productsList.innerHTML = '';
+  const cats = ['cosmetics','garments','perfumes'];
+  cats.forEach(cat => {
+    const refPath = ref(db, cat);
+    onValue(refPath, snapshot => {
+      // rebuild entire list every change
+      // we'll keep productsList grouped by category label
+      // clear and refill after collecting all categories to avoid duplicates
+      // (simple approach: rebuild whole products list by pulling all three categories)
+      // We'll collect below instead of per-cat append
+      buildAllProducts();
+    });
+  });
+}
+
+/* Build all products by reading all three categories once */
+function buildAllProducts(){
+  const cats = ['cosmetics','garments','perfumes'];
+  // read each with onValue and aggregate in memory then render
+  const all = {};
+  let remaining = cats.length;
+  cats.forEach(cat=>{
+    onValue(ref(db, cat), snap=>{
+      all[cat] = snap.val() || {};
+      // when all are present (last update will trigger)
+      remaining--;
+      if(remaining <= 0){
+        renderProductsList(all);
+        remaining = cats.length; // reset for future triggers
+      }
+    }, { onlyOnce: true });
+  });
+}
+
+function renderProductsList(all) {
+  productsList.innerHTML = '';
+  for(const cat in all){
+    const data = all[cat];
+    const title = document.createElement('div');
+    title.style.padding = '8px 0';
+    title.innerHTML = `<strong style="color:#444">${cat.charAt(0).toUpperCase()+cat.slice(1)}</strong>`;
+    productsList.appendChild(title);
+
+    if(Object.keys(data).length === 0){
+      const empty = document.createElement('div');
+      empty.style.padding = '8px 6px';
+      empty.style.color = '#6b7280';
+      empty.innerText = 'No products';
+      productsList.appendChild(empty);
+    } else {
+      for(const key in data){
+        const p = data[key];
+        const row = document.createElement('div');
+        row.className = 'card-row';
+        row.innerHTML = `
+          <div class="card-left">
+            <img src="${p.image}" alt="${p.name}">
+            <div>
+              <div style="font-weight:700">${p.name}</div>
+              <div style="font-size:13px;color:#6b7280">Rs. ${p.price}</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button class="btn-edit btn-small" data-cat="${cat}" data-key="${key}">Edit</button>
+            <button class="btn-danger btn-small" data-cat="${cat}" data-key="${key}">Delete</button>
+          </div>`;
+        productsList.appendChild(row);
+      }
+    }
+  }
+
+  // attach handlers
+  productsList.querySelectorAll('.btn-danger').forEach(b=>{
+    b.onclick = () => {
+      const cat = b.dataset.cat, key = b.dataset.key;
+      if(confirm('Delete this product?')) {
+        remove(ref(db, `${cat}/${key}`)).then(()=>{/*deleted*/}).catch(e=>alert(e));
+      }
+    };
+  });
+
+  productsList.querySelectorAll('.btn-edit').forEach(b=>{
+    b.onclick = () => {
+      const cat = b.dataset.cat, key = b.dataset.key;
+      // populate form with product data
+      const productRef = ref(db, `${cat}/${key}`);
+      onValue(productRef, snap=>{
+        const p = snap.val();
+        if(!p) return alert('Product not found');
+        productCategory.value = cat;
+        productName.value = p.name || '';
+        productPrice.value = p.price || '';
+        productImage.value = p.image || '';
+        productDescription.value = p.description || '';
+        editingProduct = { cat, key };
+        addProductBtn.style.display = 'none';
+        updateProductBtn.style.display = 'inline-block';
+        cancelEditProduct.style.display = 'inline-block';
+      }, { onlyOnce: true });
+    };
+  });
+}
+
+/* add product */
+addProductBtn.onclick = () => {
+  const cat = productCategory.value;
+  const name = productName.value.trim();
+  const price = productPrice.value.trim();
+  const image = productImage.value.trim();
+  const desc = productDescription.value.trim();
+  if(!name || !price || !image) return alert('Fill name, price, image');
+
+  const newRef = push(ref(db, cat));
+  set(newRef, { name, price, image, description: desc })
+    .then(()=> {
+      productName.value=''; productPrice.value=''; productImage.value=''; productDescription.value='';
+      alert('Product added ✅');
+      buildAllProducts();
+    })
+    .catch(err => alert('Error: '+err));
+};
+
+/* update product */
+updateProductBtn.onclick = () => {
+  if(!editingProduct) return;
+  const {cat, key} = editingProduct;
+  const name = productName.value.trim();
+  const price = productPrice.value.trim();
+  const image = productImage.value.trim();
+  const desc = productDescription.value.trim();
+  if(!name || !price || !image) return alert('Fill name, price, image');
+  update(ref(db, `${cat}/${key}`), { name, price, image, description: desc })
+    .then(()=> {
+      alert('Product updated ✅');
+      productName.value=''; productPrice.value=''; productImage.value=''; productDescription.value='';
+      editingProduct = null;
+      addProductBtn.style.display = 'inline-block';
+      updateProductBtn.style.display = 'none';
+      cancelEditProduct.style.display = 'none';
+      buildAllProducts();
+    })
+    .catch(e=> alert('Error: '+e));
+};
+
+cancelEditProduct.onclick = () => {
+  editingProduct = null;
+  productName.value=''; productPrice.value=''; productImage.value=''; productDescription.value='';
+  addProductBtn.style.display = 'inline-block';
+  updateProductBtn.style.display = 'none';
+  cancelEditProduct.style.display = 'none';
+};
+
+/* staff section */
+addStaffBtn.onclick = () => {
+  const name = staffName.value.trim();
+  const role = staffRole.value.trim();
+  const contact = staffContact.value.trim();
+  const photo = staffPhoto.value.trim();
+  if(!name || !photo) return alert('Fill name and photo');
+  const newRef = push(ref(db, 'staff'));
+  set(newRef, { name, role, contact, photo })
+    .then(()=> {
+      staffName.value=''; staffRole.value=''; staffContact.value=''; staffPhoto.value='';
+      alert('Staff added ✅'); refreshStaff();
+    }).catch(e=>alert(e));
+};
+
+function refreshStaff(){
+  staffList.innerHTML = '';
+  onValue(ref(db,'staff'), snap=>{
+    const data = snap.val() || {};
+    if(Object.keys(data).length===0){
+      staffList.innerHTML = '<div style="color:#6b7280;padding:8px 0">No staff</div>'; return;
+    }
+    staffList.innerHTML='';
+    for(const key in data){
+      const s = data[key];
+      const row = document.createElement('div');
+      row.className = 'card-row';
+      row.innerHTML = `<div class="card-left"><img src="${s.photo}"><div><div style="font-weight:700">${s.name}</div><div style="font-size:13px;color:#6b7280">${s.role} • ${s.contact||''}</div></div></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-edit btn-small" data-key="${key}">Edit</button>
+          <button class="btn-danger btn-small" data-key="${key}">Delete</button>
+        </div>`;
+      staffList.appendChild(row);
+    }
+
+    // attach
+    staffList.querySelectorAll('.btn-danger').forEach(b=>{
+      b.onclick = () => {
+        if(!confirm('Delete this staff?')) return;
+        const key = b.dataset.key;
+        remove(ref(db, `staff/${key}`)).catch(e=>alert(e));
+      };
+    });
+
+    staffList.querySelectorAll('.btn-edit').forEach(b=>{
+      b.onclick = () => {
+        const key = b.dataset.key;
+        onValue(ref(db, `staff/${key}`), snap=>{
+          const s = snap.val();
+          staffName.value = s.name || '';
+          staffRole.value = s.role || '';
+          staffContact.value = s.contact || '';
+          staffPhoto.value = s.photo || '';
+          editingStaffKey = key;
+          addStaffBtn.style.display='none';
+          updateStaffBtn.style.display='inline-block';
+          cancelEditStaff.style.display='inline-block';
+        }, { onlyOnce: true });
+      };
+    });
+
+  }, { onlyOnce: false });
+}
+
+/* update staff */
+updateStaffBtn.onclick = () => {
+  if(!editingStaffKey) return;
+  const payload = { name: staffName.value.trim(), role: staffRole.value.trim(), contact: staffContact.value.trim(), photo: staffPhoto.value.trim() };
+  if(!payload.name || !payload.photo) return alert('Fill name and photo');
+  update(ref(db, `staff/${editingStaffKey}`), payload)
+    .then(()=> {
+      alert('Staff updated ✅'); staffName.value=''; staffRole.value=''; staffContact.value=''; staffPhoto.value='';
+      editingStaffKey = null;
+      addStaffBtn.style.display='inline-block';
+      updateStaffBtn.style.display='none';
+      cancelEditStaff.style.display='none';
+      refreshStaff();
+    })
+    .catch(e=>alert(e));
+};
+
+cancelEditStaff.onclick = () => {
+  editingStaffKey = null;
+  staffName.value=''; staffRole.value=''; staffContact.value=''; staffPhoto.value='';
+  addStaffBtn.style.display='inline-block';
+  updateStaffBtn.style.display='none';
+  cancelEditStaff.style.display='none';
+};
+
+/* initial load */
+buildAllProducts();
+refreshStaff();
+</script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+/* style.css - full replacement (polished, consistent) */
+
+* { margin:0; padding:0; box-sizing:border-box; font-family: 'Poppins', sans-serif; }
+html,body { height:100%; }
+
+body {
+  background: linear-gradient(180deg, #fbfbfd 0%, #f3f6fb 100%);
+  color: #222;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* Header */
+header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 22px;
+  background:#fff;
+  box-shadow:0 6px 24px rgba(16,24,40,0.06);
+  position:sticky;
+  top:0;
+  z-index:1000;
+}
+.logo { width:120px; height:auto; }
+#searchBar { flex:1; margin:0 18px; padding:10px 14px; border-radius:10px; border:1px solid #e9eef6; }
+nav a { margin-left:12px; padding:8px 12px; border-radius:8px; background:#ff6600; color:#fff; font-weight:600; text-decoration:none; }
+nav a:hover { background:#e55c00; }
+
+/* Main */
+main { max-width:1200px; margin:28px auto; padding:0 18px; text-align:center; }
+main h1 { color:#ff6600; font-size:30px; margin-bottom:10px; }
+main p { color:#52606d; font-size:16px; max-width:820px; margin:0 auto 20px; }
+
+/* WhatsApp float */
+.whatsapp-float {
+  position:fixed; bottom:20px; right:20px; width:56px; height:56px; border-radius:50%;
+  display:flex; justify-content:center; align-items:center; background:#25d366; color:white; font-size:22px;
+  box-shadow:0 10px 30px rgba(37,211,102,0.12); z-index:1200; text-decoration:none;
+}
+
+/* Product grid & cards */
+.product-container, .container { display:grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap:18px; align-items:start; }
+.product-card {
+  background:#fff; border-radius:12px; padding:12px; box-shadow:0 6px 20px rgba(16,24,40,0.06);
+  display:flex; flex-direction:column; gap:8px; min-height:280px;
+}
+.product-card img { width:100%; height:160px; object-fit:cover; border-radius:8px; }
+.product-card .name { font-size:18px; font-weight:700; color:#1f2937; }
+.product-card .desc { font-size:13px; color:#6b7280; flex: 1 0 auto; }
+.product-card .price { font-size:16px; font-weight:600; color:#e11d48; }
+.product-card .actions { display:flex; gap:8px; align-items:center; margin-top:8px; }
+
+/* Buttons */
+.btn { padding:8px 12px; border-radius:8px; border:none; cursor:pointer; font-weight:600; }
+.btn-primary { background:#ff6600; color:#fff; }
+.btn-primary:hover{ background:#e65c00; }
+.btn-whatsapp { background:#25d366; color:#fff; }
+
+/* Staff card */
+.staff-card {
+  background:#fff; border-radius:12px; padding:0; overflow:hidden; position:relative; box-shadow:0 6px 20px rgba(16,24,40,0.06);
+}
+.staff-card img { width:100%; height:220px; object-fit:cover; display:block; }
+.staff-card .overlay {
+  position:absolute; left:0; right:0; bottom:0; background:linear-gradient(180deg, transparent, rgba(0,0,0,0.6));
+  color:#fff; padding:12px;
+}
+.staff-card .overlay h4 { margin:0; font-size:16px; font-weight:700; color:#fff; }
+.staff-card .overlay p { margin:4px 0 0; font-size:13px; color:rgba(255,255,255,0.95); }
+
+/* Admin lists (cards) */
+.card { display:flex; align-items:center; gap:12px; padding:10px; border-radius:8px; background:#fff; box-shadow:0 4px 12px rgba(16,24,40,0.04); }
+.card img { width:56px; height:56px; object-fit:cover; border-radius:8px; }
+
+/* Popup (rules) */
+#rulesPopup { position:fixed; inset:0; display:flex; justify-content:center; align-items:center; background:rgba(3,7,18,0.6); z-index:1500; visibility:hidden; opacity:0; transition:0.2s; }
+#rulesPopup.active { visibility:visible; opacity:1; }
+.rules-box {
+  background:#fff; border-radius:14px; width:92%; max-width:760px; max-height:84vh; overflow:hidden; display:flex; flex-direction:column;
+  box-shadow:0 20px 50px rgba(10,20,60,0.16);
+}
+.rules-header { padding:18px 22px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; }
+.rules-body { padding:18px 22px; overflow-y:auto; line-height:1.6; color:#374151; font-size:15px; }
+.rules-footer { padding:14px 22px; border-top:1px solid #f1f5f9; display:flex; justify-content:center; gap:12px; }
+
+/* tiny responsiveness */
+@media (max-width:640px){
+  .product-card img{ height:140px; }
+  .staff-card img{ height:180px; }
+  header { padding:12px; }
+}
