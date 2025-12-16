@@ -1,63 +1,83 @@
-/* ==================================================
-   ZAID STORE — PREMIUM AESTHETIC E-COMMERCE CSS
-   CSS-ONLY | PRODUCTION QUALITY
-================================================== */
+/* =========================================================
+   ZAID STORE — ELITE E-COMMERCE CSS SYSTEM
+   Dark mode • Amazon cards • Conversion UI • Invoice print
+   CSS ONLY — PRODUCTION READY
+========================================================= */
 
-/* ---------- Root System ---------- */
+/* ---------- ROOT DESIGN SYSTEM ---------- */
 :root{
   --brand:#ff6600;
   --brand-dark:#e65c00;
   --accent:#e11d48;
+
   --bg-main:#f6f8fc;
-  --bg-soft:#fbfbfe;
+  --bg-soft:#ffffff;
   --card:#ffffff;
+
   --text-main:#111827;
   --text-muted:#6b7280;
+
   --radius-lg:18px;
   --radius-md:12px;
   --radius-sm:8px;
+
   --shadow-sm:0 6px 18px rgba(16,24,40,.06);
   --shadow-md:0 14px 40px rgba(16,24,40,.10);
   --shadow-lg:0 30px 80px rgba(16,24,40,.18);
+
   --transition:.28s cubic-bezier(.4,0,.2,1);
 }
 
-/* ---------- Reset ---------- */
+/* ---------- DARK MODE (AUTO) ---------- */
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg-main:#0b0f19;
+    --bg-soft:#111827;
+    --card:#0f172a;
+    --text-main:#f9fafb;
+    --text-muted:#9ca3af;
+    --shadow-sm:0 6px 20px rgba(0,0,0,.45);
+    --shadow-md:0 20px 50px rgba(0,0,0,.6);
+    --shadow-lg:0 40px 90px rgba(0,0,0,.8);
+  }
+}
+
+/* ---------- RESET ---------- */
 *{
   margin:0;
   padding:0;
   box-sizing:border-box;
   font-family:'Poppins',sans-serif;
 }
-
-html,body{ height:100%; }
+html,body{height:100%}
 
 body{
-  background:linear-gradient(180deg,#ffffff 0%,var(--bg-main) 100%);
+  background:linear-gradient(180deg,var(--bg-soft),var(--bg-main));
   color:var(--text-main);
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
 }
 
-/* ==================================================
-   HEADER (Luxury / Sticky / Clean)
-================================================== */
+/* =========================================================
+   HEADER — LUXURY GLASS
+========================================================= */
 header{
   position:sticky;
   top:0;
   z-index:1000;
-  background:rgba(255,255,255,.92);
-  backdrop-filter:blur(8px);
   display:flex;
   align-items:center;
   gap:18px;
   padding:14px 28px;
+  background:rgba(255,255,255,.85);
+  backdrop-filter:blur(10px);
   box-shadow:var(--shadow-sm);
 }
-
-.logo{
-  width:120px;
+@media (prefers-color-scheme: dark){
+  header{background:rgba(15,23,42,.75);}
 }
+
+.logo{width:120px}
 
 /* Search */
 #searchBar{
@@ -66,36 +86,32 @@ header{
   border-radius:var(--radius-md);
   border:1px solid #e5e9f2;
   background:#f9fbff;
-  font-size:14px;
   transition:var(--transition);
 }
 #searchBar:focus{
   outline:none;
-  background:#fff;
   border-color:var(--brand);
+  background:#fff;
 }
 
 /* Nav */
 nav a{
   margin-left:12px;
-  padding:9px 16px;
+  padding:9px 18px;
   border-radius:999px;
   background:linear-gradient(135deg,var(--brand),#ff8533);
   color:#fff;
-  font-weight:600;
+  font-weight:700;
   font-size:14px;
   text-decoration:none;
   box-shadow:0 10px 24px rgba(255,102,0,.35);
   transition:var(--transition);
 }
-nav a:hover{
-  transform:translateY(-2px);
-  background:linear-gradient(135deg,var(--brand-dark),#ff6a00);
-}
+nav a:hover{transform:translateY(-2px)}
 
-/* ==================================================
-   MAIN LAYOUT
-================================================== */
+/* =========================================================
+   MAIN TYPOGRAPHY (CONVERSION)
+========================================================= */
 main{
   max-width:1240px;
   margin:48px auto;
@@ -104,64 +120,55 @@ main{
 }
 
 main h1{
-  font-size:34px;
+  font-size:36px;
+  letter-spacing:-.5px;
   color:var(--brand);
-  margin-bottom:14px;
-  letter-spacing:-.4px;
-}
-
-main h2{
-  font-size:26px;
-  color:var(--brand);
-  margin-bottom:18px;
+  margin-bottom:12px;
 }
 
 main p{
   font-size:16px;
   color:var(--text-muted);
   max-width:820px;
-  margin:0 auto 34px;
+  margin:0 auto 36px;
   line-height:1.7;
 }
 
-/* ==================================================
-   WHATSAPP FLOAT (PREMIUM)
-================================================== */
+/* =========================================================
+   WHATSAPP CTA — HIGH CONVERSION
+========================================================= */
 .whatsapp-float{
   position:fixed;
   bottom:24px;
   right:24px;
-  width:60px;
-  height:60px;
+  width:62px;
+  height:62px;
   border-radius:50%;
-  background:linear-gradient(135deg,#25d366,#20c05c);
+  background:linear-gradient(135deg,#25d366,#1ebe5d);
   color:#fff;
+  font-size:26px;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:24px;
-  text-decoration:none;
-  box-shadow:0 22px 55px rgba(37,211,102,.45);
+  box-shadow:0 25px 60px rgba(37,211,102,.55);
   transition:var(--transition);
   z-index:1200;
 }
-.whatsapp-float:hover{
-  transform:scale(1.08);
-}
+.whatsapp-float:hover{transform:scale(1.1)}
 
-/* ==================================================
+/* =========================================================
    PRODUCT GRID
-================================================== */
+========================================================= */
 .product-container,
 .container{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-  gap:26px;
+  gap:28px;
 }
 
-/* ==================================================
-   PRODUCT CARD (REAL E-COMMERCE FEEL)
-================================================== */
+/* =========================================================
+   AMAZON-STYLE PRODUCT CARD
+========================================================= */
 .product-card{
   background:var(--card);
   border-radius:var(--radius-lg);
@@ -170,21 +177,24 @@ main p{
   flex-direction:column;
   gap:12px;
   box-shadow:var(--shadow-md);
-  transition:var(--transition);
   position:relative;
   overflow:hidden;
-}
-
-.product-card::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(180deg,transparent,rgba(0,0,0,.04));
-  opacity:0;
   transition:var(--transition);
 }
-.product-card:hover::after{
-  opacity:1;
+
+/* Badge (New / Hot look without HTML change) */
+.product-card::before{
+  content:"BEST SELLER";
+  position:absolute;
+  top:14px;
+  left:-42px;
+  transform:rotate(-45deg);
+  background:var(--accent);
+  color:#fff;
+  font-size:11px;
+  font-weight:700;
+  padding:4px 48px;
+  box-shadow:var(--shadow-sm);
 }
 
 .product-card:hover{
@@ -202,38 +212,34 @@ main p{
 /* Content */
 .product-card .name{
   font-size:18px;
-  font-weight:700;
-  letter-spacing:-.3px;
+  font-weight:800;
 }
-
 .product-card .desc{
   font-size:13px;
   color:var(--text-muted);
-  line-height:1.5;
   flex:1;
 }
-
 .product-card .price{
-  font-size:18px;
-  font-weight:800;
+  font-size:19px;
+  font-weight:900;
   color:var(--accent);
 }
 
 /* Actions */
 .product-card .actions{
-  margin-top:8px;
   display:flex;
+  margin-top:8px;
 }
 
-/* ==================================================
-   BUTTONS (PSYCHOLOGY-BASED)
-================================================== */
+/* =========================================================
+   BUTTONS — SALES PSYCHOLOGY
+========================================================= */
 .btn{
-  padding:10px 16px;
+  padding:11px 18px;
   border-radius:999px;
   border:none;
   cursor:pointer;
-  font-weight:700;
+  font-weight:800;
   font-size:14px;
   transition:var(--transition);
 }
@@ -241,27 +247,21 @@ main p{
 .btn-primary{
   background:linear-gradient(135deg,var(--brand),#ff8533);
   color:#fff;
-  box-shadow:0 10px 24px rgba(255,102,0,.35);
+  box-shadow:0 12px 26px rgba(255,102,0,.4);
 }
-.btn-primary:hover{
-  transform:translateY(-1px);
-  background:linear-gradient(135deg,var(--brand-dark),#ff6a00);
-}
+.btn-primary:hover{transform:translateY(-2px)}
 
-/* ==================================================
-   STAFF CARDS (AGENCY-LEVEL)
-================================================== */
+/* =========================================================
+   STAFF — PREMIUM OVERLAY
+========================================================= */
 .staff-card{
-  background:#fff;
   border-radius:var(--radius-lg);
   overflow:hidden;
   position:relative;
   box-shadow:var(--shadow-md);
   transition:var(--transition);
 }
-.staff-card:hover{
-  transform:translateY(-8px);
-}
+.staff-card:hover{transform:translateY(-8px)}
 
 .staff-card img{
   width:100%;
@@ -278,77 +278,42 @@ main p{
   justify-content:flex-end;
   padding:18px;
 }
+.staff-card h4{color:#fff;font-size:18px}
+.staff-card p{color:#e5e7eb;font-size:13px}
 
-.staff-card h4{
-  font-size:18px;
-  color:#fff;
-}
-.staff-card p{
-  font-size:13px;
-  color:rgba(255,255,255,.95);
-  margin-top:4px;
-}
+/* =========================================================
+   INVOICE / RECEIPT — PRINT READY
+========================================================= */
+@media print{
+  body{
+    background:#fff;
+    color:#000;
+  }
+  header, .whatsapp-float, nav{display:none!important}
 
-/* ==================================================
-   RULES / POPUPS (CLEAN)
-================================================== */
-#rulesPopup{
-  position:fixed;
-  inset:0;
-  background:rgba(10,15,30,.65);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  opacity:0;
-  visibility:hidden;
-  transition:var(--transition);
-  z-index:1500;
-}
-#rulesPopup.active{
-  opacity:1;
-  visibility:visible;
-}
+  main{
+    text-align:left;
+    max-width:700px;
+    margin:0 auto;
+  }
 
-.rules-box{
-  background:#fff;
-  width:92%;
-  max-width:760px;
-  max-height:85vh;
-  border-radius:22px;
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-  box-shadow:var(--shadow-lg);
+  .product-card{
+    box-shadow:none;
+    border:1px solid #ddd;
+    page-break-inside:avoid;
+  }
+
+  .price{
+    font-size:18px;
+    font-weight:900;
+  }
 }
 
-.rules-header,
-.rules-footer{
-  padding:20px 24px;
-  border-bottom:1px solid #eef2f7;
-}
-
-.rules-footer{
-  border-top:1px solid #eef2f7;
-  border-bottom:none;
-  display:flex;
-  justify-content:center;
-  gap:14px;
-}
-
-.rules-body{
-  padding:22px 24px;
-  overflow-y:auto;
-  font-size:15px;
-  color:#374151;
-  line-height:1.7;
-}
-
-/* ==================================================
+/* =========================================================
    RESPONSIVE
-================================================== */
+========================================================= */
 @media(max-width:720px){
-  nav a{ padding:7px 12px; font-size:13px; }
-  main h1{ font-size:28px; }
-  .product-card img{ height:170px; }
-  .staff-card img{ height:220px; }
+  main h1{font-size:28px}
+  .product-card img{height:170px}
+  .staff-card img{height:220px}
 }
